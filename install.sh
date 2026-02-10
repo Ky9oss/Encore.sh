@@ -201,3 +201,9 @@ source ~/.zshrc
 
 # kvm
 sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
+
+# bash
+sudo apt install shellcheck
+
+# git
+git config --global core.autocrlf false
