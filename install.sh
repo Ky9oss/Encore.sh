@@ -193,7 +193,11 @@ export EDITOR="/usr/sbin/nvim"
 export PATH=~/tools/nvim-linux-x86_64/bin:$PATH
 
 EOF
+
 # spectervim
 mv ~/.config/nvim ~/.config/nvim_bak
 proxychains -q git clone https://github.com/Ky9oss/SpecterVim ~/.config/nvim
 source ~/.zshrc
+
+# kvm
+sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
