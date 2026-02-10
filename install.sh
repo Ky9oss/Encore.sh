@@ -65,9 +65,9 @@ EOF
 sudo sh /media/cdrom0/VBoxLinuxAdditions.run
 
 
-apt install -y build-essential dkms linux-headers-$(uname -r) perl make gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev yacc gcc-multilib g++-multilib libc6-dev-i386
+apt install -y build-essential dkms linux-headers-$(uname -r) perl make gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev yacc gcc-multilib g++-multilib libc6-dev-i386 libcurl4-openssl-dev
 apt install -y vim curl wget net-tools lsof htop
-apt-get install -y zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags npm socat
+apt-get install -y gdb zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags npm socat
 
 
 # never sleep or suspend
@@ -80,6 +80,7 @@ sudo sed -i '/^\[ProxyList\]/,/^$/d' /etc/proxychains4.conf
 sudo tee -a /etc/proxychains4.conf << 'EOF' 
 [ProxyList]
 socks5 ip port user pass
+
 EOF
 proxychains4 -q curl https://www.google.com # Return: Google Search
 
@@ -98,7 +99,7 @@ ln -s -f "${PWD}"/.tmux.conf ~/.config/tmux/tmux.conf
 cp "${PWD}"/.tmux.conf.local ~/.config/tmux/tmux.conf.local
 mkdir -p ~/.tmux/plugins && cd ~/.tmux/plugins && proxychains4 git clone 'https://github.com/tmux-plugins/tmux-copycat' && proxychains4 git clone 'https://github.com/tmux-plugins/tmux-cpu' && proxychains4 git clone 'https://github.com/tmux-plugins/tmux-resurrect' && proxychains4 git clone 'https://github.com/aserowy/tmux.nvim'
 
-proxychains wget https://xxx -O ~/.config/tmux/tmux.conf.local
+proxychains4 -q wget https://raw.githubusercontent.com/Ky9oss/Encore.sh/refs/heads/main/tmux.conf.local -O ~/.config/tmux/tmux.conf.local
 
 
 
@@ -167,11 +168,23 @@ cd ~/tools && proxychains4 -q git clone https://luajit.org/git/luajit.git
 cd ~/tools/luajit && make && sudo make install
 cd ~/tools && proxychains4 -q wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz && tar zxpf luarocks-3.13.0.tar.gz
 cd ~/tools/luarocks-3.13.0 && ./configure && make && sudo make install
+mkdir ~/tools/lua_ls && cd ~/tools/lua_ls && proxychains4 -q wget https://github.com/LuaLS/lua-language-server/releases/download/3.17.1/lua-language-server-3.17.1-linux-x64.tar.gz && tar -zxvf lua-language-server-3.17.1-linux-x64.tar.gz
+sudo tee -a ~/.zshrc << 'EOF'
+export PATH=~/tools/lua_ls/bin:$PATH
+
+EOF
 # need rust
 cargo install stylua --features luajit
+source ~/.zshrc
 
 # c/cpp
 sudo apt-get install clang-format
+
+# radare2
+cd ~/tools && proxychains4 -q git clone https://github.com/radareorg/radare2 && chmod +x radare2/sys/install.sh && proxychains4 -q radare2/sys/install.sh
+
+# rockyou
+mkdir ~/tools/wordlists && cd ~/tools/wordlists && proxychains4 -q git clone https://github.com/zacheller/rockyou && cd rockyou && tar -zxvf ./rockyou.txt.tar.gz
 
 # nvim
 cd ~/tools && proxychains4 -q wget https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz && tar -zxvf ./nvim-linux-x86_64.tar.gz
@@ -180,6 +193,7 @@ export EDITOR="/usr/sbin/nvim"
 export PATH=~/tools/nvim-linux-x86_64/bin:$PATH
 
 EOF
+# spectervim
 mv ~/.config/nvim ~/.config/nvim_bak
 proxychains -q git clone https://github.com/Ky9oss/SpecterVim ~/.config/nvim
 source ~/.zshrc
