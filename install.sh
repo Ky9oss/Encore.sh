@@ -164,6 +164,7 @@ source ~/.zshrc
 
 
 # lua
+cd tools && proxychains -q wget https://www.lua.org/ftp/lua-5.5.0.tar.gz && tar -zxvf lua-5.5.0.tar.gz && cd lua-5.5.0 && make all test && sudo make install
 cd ~/tools && proxychains4 -q git clone https://luajit.org/git/luajit.git
 cd ~/tools/luajit && make && sudo make install
 cd ~/tools && proxychains4 -q wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz && tar zxpf luarocks-3.13.0.tar.gz
@@ -179,20 +180,39 @@ source ~/.zshrc
 
 # c/cpp
 sudo apt-get install clang-format
+cd ~/tools/bin && proxychains4 wget https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip && unzip ninja-linux.zip
+proxychains wget https://github.com/mesonbuild/meson/releases/download/1.10.1/meson-1.10.1.tar.gz && tar -zxf meson-1.10.1.tar.gz && cd meson-1.10.1 && ln -s meson.py meson
+sudo tee -a ~/.zshrc << 'EOF'
+export PATH=~/tools/bin:$PATH
+export PATH=~/tools/meson-1.10.1:$PATH
+
+EOF
+
+# re
+sudo apt install strace ltrace
 
 # radare2
 cd ~/tools && proxychains4 -q git clone https://github.com/radareorg/radare2 && chmod +x radare2/sys/install.sh && proxychains4 -q radare2/sys/install.sh
+proxychains r2pm -U
+proxychains r2pm install r2dec
+
 
 # rockyou
 mkdir ~/tools/wordlists && cd ~/tools/wordlists && proxychains4 -q git clone https://github.com/zacheller/rockyou && cd rockyou && tar -zxvf ./rockyou.txt.tar.gz
+
+# sshpass
+cd ~/tools/ && proxychains4 -q git clone https://github.com/kevinburke/sshpass.git && cd sshpass && ./configure && sudo make && sudo make install
 
 # nvim
 cd ~/tools && proxychains4 -q wget https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz && tar -zxvf ./nvim-linux-x86_64.tar.gz
 sudo tee -a ~/.zshrc << 'EOF'
 export EDITOR="/usr/sbin/nvim"
+export MANPAGER='nvim +Man!'
 export PATH=~/tools/nvim-linux-x86_64/bin:$PATH
+export PATH=~/.local/share/nvim/mason/bin:$PATH
 
 EOF
+cd ~/tools/nvim-linux-x86_64/bin/nvim && sudo ln -s ./nvim /usr/sbin/nvim
 
 # spectervim
 mv ~/.config/nvim ~/.config/nvim_bak
@@ -203,9 +223,23 @@ source ~/.zshrc
 sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
 
 # bash
-sudo apt install shellcheck
+sudo apt install shellcheck bats
 
 # git
 git config --global core.autocrlf false
 git config --global credential.helper store
+
+# mutiple versions of glibc
+mkdir -p ~/tools/glibc
+proxychains wget https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
+tar xf glibc-2.38.tar.xz
+cd glibc-2.38
+mkdir build && cd build
+../configure --prefix=$HOME/tools/glibc/glibc-2.38 \
+             --disable-profile --enable-add-ons \
+             --with-headers=/usr/include   # 通常用系统头文件
+make -j$(nproc)
+make install
+cd ../../ && rm -rf glibc-2.38
+
 
