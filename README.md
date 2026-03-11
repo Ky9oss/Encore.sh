@@ -21,9 +21,13 @@ A `bash` script to restore my development environment.
 ```
 
 ## QuickStart
-Set up `.env` in the same dir as `install.sh`
+Set up `env-dev.conf` in the same dir as `install.sh`
 ```txt
-
+ PROXY_PROTOCAL=socks
+ PROXY_IP=x.x.x.x
+ PROXY_PORT=xx
+ PROXY_USER=xxx
+ PROXY_PASS=xxx
 ```
 
 Then run:
@@ -32,7 +36,7 @@ su root
 ./install.sh
 ```
 
-## Features
+## Configure
 
 - install basic libs
 - install useful tools
