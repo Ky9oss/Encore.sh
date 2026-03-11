@@ -9,3 +9,13 @@
   result="$(echo 2 2+p | dc)"
   [ "$result" -eq 4 ]
 }
+
+@test "addition using bc 2" {
+  result="$(echo 2+2 | bc)"
+  [ "$result" -eq 4 ]
+}
+
+@test "addition using dc 2" {
+  result="$(echo 2 2+p | dc)"
+  [ "$result" -eq 4 ]
+}
