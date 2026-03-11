@@ -5,6 +5,8 @@
     <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
     <img src="https://img.shields.io/badge/Maintainer-Ky9oss-red" alt="Maintainer">
     <br>
+    <br>
+    <br>
 </div>
 
 A `bash` script to restore my development environment.
