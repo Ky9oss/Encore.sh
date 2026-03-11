@@ -47,9 +47,20 @@ sudo usermod -aG sudo "$USER"
 source .env
 
 
+# proxychains-ng
+sudo apt-get -y install proxychains-ng
+sudo sed -i '/^\[ProxyList\]/,/^$/d' /etc/proxychains4.conf
+sudo tee -a /etc/proxychains4.conf << 'EOF' 
+[ProxyList]
+socks5 ip port user pass
+
+EOF
+proxychains4 -q curl https://www.google.com # Return: Google Search
+
+
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
 sudo tee /etc/apt/sources.list << 'EOF'
-# Debian 13 bookworm
+# Debian 12 bookworm - tuna
 deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware
 
@@ -61,7 +72,12 @@ deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib
 
 deb https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
 # deb-src https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+
+deb http://deb.debian.org/debian trixie main
+deb http://deb.debian.org/debian sid main
+
 EOF
+sudo proxychains apt update
 sudo sh /media/cdrom0/VBoxLinuxAdditions.run
 
 
@@ -74,15 +90,6 @@ apt-get install -y gdb zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs uni
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 
-# proxychains-ng
-sudo apt-get -y install proxychains-ng
-sudo sed -i '/^\[ProxyList\]/,/^$/d' /etc/proxychains4.conf
-sudo tee -a /etc/proxychains4.conf << 'EOF' 
-[ProxyList]
-socks5 ip port user pass
-
-EOF
-proxychains4 -q curl https://www.google.com # Return: Google Search
 
 
 mkdir ~/tools
@@ -189,7 +196,7 @@ export PATH=~/tools/meson-1.10.1:$PATH
 EOF
 
 # re
-sudo apt install strace ltrace
+sudo apt install strace ltrace patchelf xxd
 
 # radare2
 cd ~/tools && proxychains4 -q git clone https://github.com/radareorg/radare2 && chmod +x radare2/sys/install.sh && proxychains4 -q radare2/sys/install.sh
@@ -242,4 +249,7 @@ make -j$(nproc)
 make install
 cd ../../ && rm -rf glibc-2.38
 
+
+# new gcc/g++
+sudo proxychains apt install -t sid    gcc-15 g++-15
 
