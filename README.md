@@ -1,7 +1,11 @@
 # Encore.sh
-<img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg" alt="made-with-Bash">
-<img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
-<img src="https://img.shields.io/badge/Maintainer-Ky9oss-red" alt="Maintainer">
+
+<div align="left">
+    <img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg" alt="made-with-Bash">
+    <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
+    <img src="https://img.shields.io/badge/Maintainer-Ky9oss-red" alt="Maintainer">
+    <br>
+</div>
 
 A `bash` script to restore my development environment.
 
@@ -25,7 +29,9 @@ A `bash` script to restore my development environment.
 ```
 
 ## QuickStart
+
 Set up `env-dev.conf` in the same dir as `install.sh`
+
 ```txt
  PROXY_PROTOCAL=socks
  PROXY_IP=x.x.x.x
@@ -35,6 +41,7 @@ Set up `env-dev.conf` in the same dir as `install.sh`
 ```
 
 Then run:
+
 ```sh
 su root
 ./install.sh
