@@ -337,6 +337,49 @@ EOF
     sudo proxychains apt install -t sid gcc-15 g++-15
 }
 
+install_docker() {
+    # Docker
+    for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+    sudo proxychains apt-get update
+    sudo proxychains apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    # Docker 代理：使用privoxy将socks5代理转http
+    sudo apt install -y privoxy
+    echo 'forward-socks5t / user:pass@127.0.0.1:1080 .' | sudo tee -a /etc/privoxy/config
+    sudo systemctl restart privoxy
+    sudo mkdir -p /etc/systemd/system/docker.service.d
+
+    sudo tee /etc/systemd/system/docker.service.d/proxy.conf >/dev/null <<EOF
+[Service]
+Environment="HTTP_PROXY=http://127.0.0.1:8118"
+Environment="HTTPS_PROXY=https://127.0.0.1:8118"
+Environment="NO_PROXY=localhost,127.0.0.1"
+EOF
+
+    sudo systemctl daemon-reexec
+    sudo systemctl restart docker
+    sudo docker run hello-world
+    # 如果遇到docker compose，需要修改compose.yml文件来添加proxy：
+    #    environment:
+    #      - HTTP_PROXY=http://127.0.0.1:8118
+    #      - HTTPS_PROXY=https://127.0.0.1:8118
+    #      - NO_PROXY=localhost,127.0.0.1
+}
+
+install_gitlab() {
+    whoami
+}
+
+install_utils() {
+    sudo ln -s "$(pwd)/utils/download.sh" /bin/download
+
+}
+
 banner0
 sleep 0.3
 banner1
