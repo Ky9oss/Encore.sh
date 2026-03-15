@@ -312,6 +312,8 @@ EOF
 
     # kvm
     sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
+    # kvm check
+    sudo virt-host-validate qemu
 
     # bash
     sudo apt install shellcheck bats
