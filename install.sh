@@ -1,7 +1,14 @@
 #!/bin/bash
 #
-# Restore my development environment
+# Restore my development environment.
 # By Ky9oss
+
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+DOWNLOAD_SH="$CURRENT_DIR/utils/download.sh"
+source "$DOWNLOAD_SH"
+
+TARGET_DIR="$HOME/tools/"
 
 banner0() {
     cat <<'EOF'
@@ -280,35 +287,12 @@ export PATH=~/tools/meson-1.10.1:$PATH
 
 EOF
 
-    # re
-    sudo apt install strace ltrace patchelf xxd
-
-    # radare2
-    cd ~/tools && proxychains4 -q git clone https://github.com/radareorg/radare2 && chmod +x radare2/sys/install.sh && proxychains4 -q radare2/sys/install.sh
-    proxychains r2pm -U
-    proxychains r2pm install r2dec
 
     # rockyou
     mkdir ~/tools/wordlists && cd ~/tools/wordlists && proxychains4 -q git clone https://github.com/zacheller/rockyou && cd rockyou && tar -zxvf ./rockyou.txt.tar.gz
 
     # sshpass
     cd ~/tools/ && proxychains4 -q git clone https://github.com/kevinburke/sshpass.git && cd sshpass && ./configure && sudo make && sudo make install
-
-    # nvim
-    cd ~/tools && proxychains4 -q wget https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz && tar -zxvf ./nvim-linux-x86_64.tar.gz
-    sudo tee -a ~/.zshrc <<'EOF'
-export EDITOR="/usr/sbin/nvim"
-export MANPAGER='nvim +Man!'
-export PATH=~/tools/nvim-linux-x86_64/bin:$PATH
-export PATH=~/.local/share/nvim/mason/bin:$PATH
-
-EOF
-    cd ~/tools/nvim-linux-x86_64/bin/nvim && sudo ln -s ./nvim /usr/sbin/nvim
-
-    # spectervim
-    mv ~/.config/nvim ~/.config/nvim_bak
-    proxychains -q git clone https://github.com/Ky9oss/SpecterVim ~/.config/nvim
-    source ~/.zshrc
 
     # kvm
     sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
@@ -371,6 +355,17 @@ EOF
     #      - HTTP_PROXY=http://127.0.0.1:8118
     #      - HTTPS_PROXY=https://127.0.0.1:8118
     #      - NO_PROXY=localhost,127.0.0.1
+
+    # Cross compilation
+    sudo apt install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64-tools
+
+    # wine and wine-msvc
+    sudo mkdir -pm755 /etc/apt/keyrings
+    proxychains wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
+    sudo dpkg --add-architecture i386
+    sudo apt-get install -y wine64 msitools winbind
+    cd ~/tools && proxychains git clone https://github.com/mstorsjo/msvc-wine && cd msvc-wine
+    mkdir -p ~/my_msvc/opt/msvc && ./vsdownload.py --dest ~/my_msvc/opt/msvc && ./install.sh ~/my_msvc/opt/msvc
 }
 
 install_gitlab() {
@@ -382,12 +377,61 @@ install_utils() {
 
 }
 
-banner0
-sleep 0.3
-banner1
-sleep 0.3
-banner2
-sleep 0.3
-banner3
-sleep 0.3
-banner4
+install_neovim() {
+    # nvim
+    download "https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz"
+
+    sudo tee -a ~/.zshrc <<'EOF'
+# nvim
+export EDITOR="/usr/sbin/nvim"
+export MANPAGER='nvim +Man!'
+export PATH=~/tools/nvim-linux-x86_64/bin:$PATH
+export PATH=~/.local/share/nvim/mason/bin:$PATH
+
+EOF
+    cd ~/tools/nvim-linux-x86_64/bin/nvim && sudo ln -s ./nvim /usr/sbin/nvim
+
+    # spectervim
+    mv ~/.config/nvim ~/.config/nvim_bak
+    proxychains -q git clone https://github.com/Ky9oss/SpecterVim ~/.config/nvim
+    source ~/.zshrc
+}
+
+install_radare2() {
+    proxychains4 -q git clone https://github.com/radareorg/radare2
+    chmod +x radare2/sys/install.sh
+    proxychains4 -q radare2/sys/install.sh
+    proxychains r2pm -U
+    proxychains r2pm install r2dec
+}
+
+
+print_banner() {
+
+    banner0
+    sleep 0.3
+    banner1
+    sleep 0.3
+    banner2
+    sleep 0.3
+    banner3
+    sleep 0.3
+    banner4
+
+}
+
+install_re_basics() {
+
+    sudo apt install strace ltrace patchelf xxd
+}
+
+main() {
+
+    print_banner
+
+    if [[ -e "$TARGET_DIR" ]]; then
+        mkdir -p "$TARGET_DIR"
+    fi
+
+    cd "$TARGET_DIR" || exit
+}

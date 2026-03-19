@@ -60,8 +60,6 @@ su root
 - install and configure tmux
 - install and configure neovim
 - install and configure zsh
-- set current user sudoer
-- set ssh server and auto register the active info in remote server
 
 ## Test
 

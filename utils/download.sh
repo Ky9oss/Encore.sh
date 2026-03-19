@@ -5,7 +5,7 @@
 # $1: url
 # By Ky9oss
 
-DOWNLOAD_DIR="$HOME/tools/"
+TARGET_DIR="$HOME/tools/"
 
 # $1: url
 check_url() {
@@ -36,7 +36,7 @@ download() {
     check_url "$1"
     check_executable proxychains wget tar
 
-    cd "$DOWNLOAD_DIR" || exit
+    cd "$TARGET_DIR" || exit
 
     local filename
     output=$(proxychains -q wget "$1" 2>&1) # wget default log to stderr :-(
