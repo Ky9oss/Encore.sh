@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # Restore my development environment.
+# For the ultimate goal, I am willing to endure all suffering.
+#
 # By Ky9oss
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,125 +12,17 @@ source "$DOWNLOAD_SH"
 
 TARGET_DIR="$HOME/tools/"
 
-banner0() {
-    cat <<'EOF'
-           )
-         ( _   _._
-          |_|-'_~_`-._
-       _.-'-_~_-~_-~-_`-._
-   _.-'_~-_~-_-~-_~_~-_~-_`-._
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |  []  []   []   []  [] |
-    |           __    ___   |
-  ._|  []  []  | .|  [___]  |_._._._._._._._._._._._._._._._._.
-  |=|________()|__|()_______|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|
-^^^^^^^^^^^^^^^ === ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    _______      ===
-   <_ky9oss_>       ===
-      ^|^             ===
-       |                 ===
+PROXY_PROTOCAL=socks
+PROXY_IP=x.x.x.x
+PROXY_PORT=xx
+PROXY_USER=xxx
+PROXY_PASS=xxx
 
-EOF
-}
-banner1() {
-    printf "\033[16A"
-    cat <<'EOF'
-           )
-         ( _   _._
-          |_|-'_~_`-._
-       _.-'-_~_-~_-~-_`-._
-   _.-'_~-_~-_-~-_~_~-_~-_`-._
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |  []  []   []   []  [] |
-    |           __    ___   |
-  ._|  []  []  | .|  [___]  |_._._._._._._._._._._._._._._._._.
-  |=|________()|__|()_______|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|
-^^^^^^^^^^^^^^^ === ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    _______      ===
-   <_ky9oss_>       === |^_^|
-      ^|^             == ( )
-       |                 ===
+INSTALL_BASIC_LIBS=1
+INSTALL_RUST=1
+INSTALL_RADARE2=1
+INSTALL_VIRTULBOX_LIBS=1
 
-EOF
-}
-
-banner2() {
-    printf "\033[3A"
-    printf "\033[K"
-    printf "\033[A"
-    printf "\033[K"
-    printf "\033[12A"
-    cat <<'EOF'
-           )
-         ( _   _._
-          |_|-'_~_`-._
-       _.-'-_~_-~_-~-_`-._
-   _.-'_~-_~-_-~-_~_~-_~-_`-._
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |  []  []   []   []  [] |
-    |           __    ___   |
-  ._|  []  []  | .|  [___]  |_._._._._._._._._._._._._._._._._.
-  |=|________()|__|()_______|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|
-^^^^^^^^^^^^^^^ === ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    _______      === |^_^|
-   <_ky9oss_>       ==( ) 
-      ^|^             ===
-       |                 ===
-
-EOF
-}
-
-banner3() {
-    printf "\033[4A"
-    printf "\033[K"
-    printf "\033[A"
-    printf "\033[K"
-    printf "\033[11A"
-    cat <<'EOF'
-           )
-         ( _   _._
-          |_|-'_~_`-._
-       _.-'-_~_-~_-~-_`-._
-   _.-'_~-_~-_-~-_~_~-_~-_`-._
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |  []  []   []   []  [] |
-    |           __    ___   |
-  ._|  []  []  | .|  [___]  |_._._._._._._._._._._._._._._._._.
-  |=|________()|__|      ___|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|
-^^^^^^^^^^^^^^^ == |^_^| ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    _______      == ( ) 
-   <_ky9oss_>       === 
-      ^|^             ===
-       |                 ===
-
-EOF
-}
-
-banner4() {
-    printf "\033[5A"
-    printf "\033[K"
-    printf "\033[A"
-    printf "\033[K"
-    printf "\033[10A"
-    cat <<'EOF'
-           )
-         ( _   _._
-          |_|-'_~_`-._
-       _.-'-_~_-~_-~-_`-._
-   _.-'_~-_~-_-~-_~_~-_~-_`-._
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    |  []  []   []   []  [] |
-    |           __    ___   |
-  ._|  []  []  | .|  [___]  |_._._._._._._._._._._._._._._._._.
-  |=|________()|__|()_______|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|=|
-^^^^^^^^^^^^^^^ === ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    _______      ===
-   <_ky9oss_>       ===
-      ^|^             ===
-       |                 ===
-
-EOF
-}
 
 #######################################
 # Confirm next command.
@@ -145,12 +39,11 @@ confirm() {
     "$@"
 }
 
-main() {
-    cmd=(apt-get update)
-    confirm "update" "${cmd[@]}"
+setup_install() {
 
+    mkdir -p ~/tools
+    apt-get update
     sudo usermod -aG sudo "$USER"
-    source .env
 
     # proxychains-ng
     sudo apt-get -y install proxychains-ng
@@ -164,35 +57,34 @@ EOF
 
     sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
     sudo tee /etc/apt/sources.list <<'EOF'
-# Debian 12 bookworm - tuna
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware
-
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware
-
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware
-
-deb https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
-# deb-src https://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
-
-deb http://deb.debian.org/debian trixie main
-deb http://deb.debian.org/debian sid main
+# Debian 13 trixie - tuna
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ trixie main contrib non-free non-free-firmware
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ trixie-updates main contrib non-free non-free-firmware
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ trixie-backports main contrib non-free non-free-firmware
+deb https://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware
 
 EOF
     sudo proxychains apt update
-    sudo sh /media/cdrom0/VBoxLinuxAdditions.run
-
-    apt install -y build-essential dkms linux-headers-$(uname -r) perl make gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev yacc gcc-multilib g++-multilib libc6-dev-i386 libcurl4-openssl-dev
-    apt install -y vim curl wget net-tools lsof htop
-    apt-get install -y gdb zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags npm socat
 
     # never sleep or suspend
     sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
-    mkdir ~/tools
+    # TODO: check current env is Virtulbox or else
+    sudo sh /media/cdrom0/VBoxLinuxAdditions.run
 
+}
+
+install_basic_libs() {
+    apt install -y build-essential dkms linux-headers-$(uname -r) perl make gcc g++ make cmake autoconf automake libtool pkg-config libc6 libc6-dev libstdc++6 libssl-dev libffi-dev zlib1g zlib1g-dev wget curl git unzip net-tools libevent-dev libncurses-dev yacc gcc-multilib g++-multilib libc6-dev-i386 libcurl4-openssl-dev
+    apt install -y vim curl wget net-tools lsof htop
+    apt-get install -y gdb zsh fzf ripgrep rsync jq bat zoxide fontconfig nodejs universal-ctags npm socat
+    # git
+    git config --global core.autocrlf false
+    git config --global credential.helper store
+
+}
+
+install_tmux() {
     # tmux
     cd ~/tools && proxychains4 git clone https://github.com/tmux/tmux && cd tmux && proxychains4 sh autogen.sh && ./configure && make
     # [Error]
@@ -206,6 +98,9 @@ EOF
 
     proxychains4 -q wget https://raw.githubusercontent.com/Ky9oss/Encore.sh/refs/heads/main/tmux.conf.local -O ~/.config/tmux/tmux.conf.local
 
+}
+
+install_ohmyzsh() {
     # ohmyzsh
     proxychains4 -q sh -c "$(proxychains4 -q wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     # Time to change your default shell to zsh:
@@ -231,6 +126,9 @@ eval "$(zoxide init zsh)"
 
 EOF
     source ~/.zshrc
+}
+
+install_python_dev() {
 
     # python - pyenv
     sudo apt install -y build-essential zlib1g-dev libffi-dev libssl-dev \
@@ -246,6 +144,9 @@ eval "$(pyenv init - zsh)"
 EOF
     source ~/.zshrc && proxychains -q pyenv update && proxychains4 -q pyenv install 3.14.0 && pyenv global 3.14.0
 
+}
+
+install_rust_dev(){
     # rust
     proxychains4 -q curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | proxychains4 -q sh
     # 1) Proceed with standard installation (default - just press enter)
@@ -262,6 +163,9 @@ export CARGO_TARGET_DIR="./"
 EOF
     source ~/.zshrc
 
+}
+
+install_lua_dev() {
     # lua
     cd tools && proxychains -q wget https://www.lua.org/ftp/lua-5.5.0.tar.gz && tar -zxvf lua-5.5.0.tar.gz && cd lua-5.5.0 && make all test && sudo make install
     cd ~/tools && proxychains4 -q git clone https://luajit.org/git/luajit.git
@@ -277,6 +181,9 @@ EOF
     cargo install stylua --features luajit
     source ~/.zshrc
 
+}
+
+install_cpp_dev() {
     # c/cpp
     sudo apt-get install clang-format
     cd ~/tools/bin && proxychains4 wget https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip && unzip ninja-linux.zip
@@ -287,25 +194,23 @@ export PATH=~/tools/meson-1.10.1:$PATH
 
 EOF
 
+    # new gcc/g++
+    sudo proxychains apt install -t sid gcc-15 g++-15
+}
 
-    # rockyou
-    mkdir ~/tools/wordlists && cd ~/tools/wordlists && proxychains4 -q git clone https://github.com/zacheller/rockyou && cd rockyou && tar -zxvf ./rockyou.txt.tar.gz
-
-    # sshpass
-    cd ~/tools/ && proxychains4 -q git clone https://github.com/kevinburke/sshpass.git && cd sshpass && ./configure && sudo make && sudo make install
-
+install_kvm() {
     # kvm
     sudo apt install cpu-checker qemu-kvm libvirt-clients libvirt-daemon-system virt-manager -y
     # kvm check
     sudo virt-host-validate qemu
+}
 
+install_bash_dev() {
     # bash
     sudo apt install shellcheck bats
+}
 
-    # git
-    git config --global core.autocrlf false
-    git config --global credential.helper store
-
+reverse_engineer_setup() {
     # mutiple versions of glibc
     mkdir -p ~/tools/glibc
     proxychains wget https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
@@ -318,9 +223,19 @@ EOF
     make -j$(nproc)
     make install
     cd ../../ && rm -rf glibc-2.38
+}
 
-    # new gcc/g++
-    sudo proxychains apt install -t sid gcc-15 g++-15
+web_hacker_setup() {
+    # rockyou
+    mkdir ~/tools/wordlists && cd ~/tools/wordlists && proxychains4 -q git clone https://github.com/zacheller/rockyou && cd rockyou && tar -zxvf ./rockyou.txt.tar.gz
+}
+
+malware_developer_setup() {
+    whoami
+}
+
+security_researcher_setup() {
+    whoami
 }
 
 install_docker() {
@@ -395,6 +310,9 @@ EOF
     mv ~/.config/nvim ~/.config/nvim_bak
     proxychains -q git clone https://github.com/Ky9oss/SpecterVim ~/.config/nvim
     source ~/.zshrc
+
+    # lib: sshpass
+    cd ~/tools/ && proxychains4 -q git clone https://github.com/kevinburke/sshpass.git && cd sshpass && ./configure && sudo make && sudo make install
 }
 
 install_radare2() {
@@ -405,29 +323,12 @@ install_radare2() {
     proxychains r2pm install r2dec
 }
 
-
-print_banner() {
-
-    banner0
-    sleep 0.3
-    banner1
-    sleep 0.3
-    banner2
-    sleep 0.3
-    banner3
-    sleep 0.3
-    banner4
-
-}
-
 install_re_basics() {
 
     sudo apt install strace ltrace patchelf xxd
 }
 
 main() {
-
-    print_banner
 
     if [[ -e "$TARGET_DIR" ]]; then
         mkdir -p "$TARGET_DIR"

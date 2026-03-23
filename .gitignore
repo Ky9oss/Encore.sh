@@ -1,4 +1,7 @@
 *.log
 .env
-temp.sh
 TODO.md
+Session.vim
+tags
+temp.*
+tagfiles

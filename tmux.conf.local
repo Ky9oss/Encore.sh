@@ -532,7 +532,11 @@ bind-key F run-shell -b "~/workspace/dev/bash/r2tmux/enter-function.sh seek"
 unbind [
 bind-key [ run-shell -b "~/workspace/dev/bash/r2tmux/copy_mode_with_line_numbers.sh"
 
+# tmux-resurrect
+set -g @resurrect-capture-pane-contents 'on'
+set -g @resurrect-strategy-nvim 'session'
+
 # OSC52 copy
 set -g allow-passthrough on
 set -g set-clipboard off
-bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel \; run-shell -b "~/workspace/dev/bash/r2tmux/runscript-in-hidden-pane.sh ~/workspace/dev/bash/r2tmux/osc52-copy.sh"
+bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel \; run-shell -b "~/workspace/dev/bash/r2tmux/osc52-fixed.sh"

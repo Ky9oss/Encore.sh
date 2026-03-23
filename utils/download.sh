@@ -47,7 +47,7 @@ download() {
         filename=${BASH_REMATCH[1]}
         # echo "filename: $filename"
     else
-        printf "ERROR: no file saved"
+        printf "ERROR: Download failed. Please check your network."
         exit 1
     fi
 
@@ -55,6 +55,8 @@ download() {
         tar -zxf "$filename"
     elif [[ $filename =~ .*tar.xz ]]; then
         tar -xf "$filename"
+    else
+        printf "WARNING: \"%s\" dose not support automatic extraction." $filename
     fi
 
     echo "done"
